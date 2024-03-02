@@ -1,19 +1,24 @@
-import pygame
+from gameobject import GameObject
 
 
-class Player:
-    def __init__(self, game, x, y):
-        self.game = game
-        self.x = x
-        self.y = y
-        # Add other attributes as needed
+class Player(GameObject):
 
-    def move(self):
-        if self.game.UP_KEY:
-            self.y -= 5
-        if self.game.DOWN_KEY:
-            self.y += 5
+    SPEED = 5
 
-    def draw(self, display):
-        # Draw the player on the display
-        pygame.draw.rect(display, self.game.WHITE, pygame.Rect(self.x, self.y, 50, 50))
+    def __init__(self, image_path, x, y, width, height):
+        super().__init__(image_path, x, y, width, height)
+
+    def move(self, direction, max_height):
+        if direction > 0:
+            self.y_pos -= self.SPEED
+        elif direction < 0:
+            self.y_pos += self.SPEED
+
+        if self.y_pos <= 0:
+            self.y_pos = max_height
+            return True
+
+        if self.y_pos >= max_height - 40:
+            self.y_pos = max_height - 40
+
+        return False
