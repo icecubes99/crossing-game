@@ -26,7 +26,7 @@ class Game():
 
         # Set the display width and height
         self.DISPLAY_W = 800
-        self.DISPLAY_H = 800
+        self.DISPLAY_H = 900
 
         # Create a surface with the specified dimensions
         self.display = pygame.Surface((self.DISPLAY_W, self.DISPLAY_H))
@@ -42,19 +42,25 @@ class Game():
         self.WHITE = (255, 255, 255)
 
         self.curr_menu = MainMenu(self)
+        self.directionx = 0
+        self.directiony = 0
+        self.difficulty = 1
+        self.health = 1.0
 
     def game_loop(self):
-        self.direction = 0
-        self.difficulty = 1
-        self.player = Player('player.png', 375, 700, 50, 50)
-        num_enemies = int(math.pow(2, self.difficulty))
-        self.enemies = [Enemy('enemy.jpg', 20, random.randint(
-            100, 500), 50, 50) for _ in range(num_enemies)]
+        self.player = Player('player.png', 375, 900, 30, 30)
+        num_enemies = int(math.pow(3, self.difficulty))
+        self.enemies = [Enemy('enemy.png', -100, random.randint(
+            50, 700), 30, 30) for _ in range(num_enemies)]
         while self.playing:
             self.check_events()
             self.update_game_state()
+            if self.health == 5:
+                self.playing = False
+                continue
             if self.check_collision():
-                print("Collision detected!")
+                self.health = round(self.health + 0.1, 1)
+                print("Collision detected")
             self.draw_game_state()
             pygame.display.update()
             clock.tick(self.TICK_RATE)
@@ -63,11 +69,18 @@ class Game():
     def check_events(self):
         keys = pygame.key.get_pressed()
         if keys[pygame.K_DOWN]:
-            self.direction = -1
+            self.directiony = -1
         elif keys[pygame.K_UP]:
-            self.direction = 1
+            self.directiony = 1
         else:
-            self.direction = 0
+            self.directiony = 0
+
+        if keys[pygame.K_LEFT]:
+            self.directionx = -1
+        elif keys[pygame.K_RIGHT]:
+            self.directionx = 1
+        else:
+            self.directionx = 0
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -86,12 +99,9 @@ class Game():
 
     def update_game_state(self):
         # Player has reached the top of the level
-        if self.player.move(self.direction, self.DISPLAY_H):
+        if self.player.move(self.directiony, self.directionx, self.DISPLAY_H):
             self.difficulty += 1  # Increase difficulty
-            # Recalculate number of enemies
-            num_enemies = int(math.pow(2, self.difficulty))
-            self.enemies = [Enemy('enemy.jpg', 20, random.randint(
-                100, 500), 50, 50) for _ in range(num_enemies)]  # Recreate enemies
+            self.game_loop()
         for enemy in self.enemies:
             enemy.move(self.DISPLAY_W)
 
@@ -100,9 +110,8 @@ class Game():
         self.player.draw(self.display)
         for enemy in self.enemies:
             enemy.draw(self.display)
-        font = pygame.font.Font(None, 36)
-        text = font.render(f'Level: {self.difficulty}', 1, self.WHITE)
-        self.display.blit(text, (10, 10))
+        self.draw_text(f"Year Level: {self.difficulty}", 30, 70, 20)
+        self.draw_text(f"CGA: {self.health}", 30, 70, 50)
         self.window.blit(self.display, (0, 0))
 
     def reset_keys(self):

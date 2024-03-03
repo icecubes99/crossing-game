@@ -1,5 +1,6 @@
 import pygame
 
+
 class Menu():
     def __init__(self, game):
         self.game = game
@@ -15,9 +16,10 @@ class Menu():
         self.game.draw_text('*', 15, self.cursor_rect.x, self.cursor_rect.y)
 
     def blit_screen(self):
-        self.game.window.blit(self.game.display, (0,0))
+        self.game.window.blit(self.game.display, (0, 0))
         pygame.display.update()
         self.game.reset_keys()
+
 
 class MainMenu(Menu):
     def __init__(self, game):
@@ -36,34 +38,43 @@ class MainMenu(Menu):
             self.game.check_events()
             self.check_input()
             self.game.display.fill(self.game.BLACK)
-            self.game.draw_text('Main Menu', 20, self.game.DISPLAY_W/2, self.game.DISPLAY_H/2 - 20)
+            self.game.draw_text(
+                'Main Menu', 20, self.game.DISPLAY_W/2, self.game.DISPLAY_H/2 - 20)
             self.game.draw_text('Start Game', 20, self.startx, self.starty)
             self.game.draw_text('About', 20, self.aboutx, self.abouty)
             self.game.draw_text('Exit', 20, self.exitx, self.exity)
+            self.game.difficulty = 1
+            self.game.health = 1.0
             self.draw_cursor()
             self.blit_screen()
 
     def move_cursor(self):
         if self.game.DOWN_KEY:
             if self.state == 'Start':
-                self.cursor_rect.midtop = (self.aboutx + self.offset, self.abouty)
+                self.cursor_rect.midtop = (
+                    self.aboutx + self.offset, self.abouty)
                 self.state = 'About'
             elif self.state == 'About':
-                self.cursor_rect.midtop = (self.exitx + self.offset, self.exity)
+                self.cursor_rect.midtop = (
+                    self.exitx + self.offset, self.exity)
                 self.state = 'Exit'
             elif self.state == 'Exit':
-                self.cursor_rect.midtop = (self.startx + self.offset, self.starty)
+                self.cursor_rect.midtop = (
+                    self.startx + self.offset, self.starty)
                 self.state = 'Start'
 
         if self.game.UP_KEY:
             if self.state == 'Start':
-                self.cursor_rect.midtop = (self.exitx + self.offset, self.exity)
+                self.cursor_rect.midtop = (
+                    self.exitx + self.offset, self.exity)
                 self.state = 'Exit'
             elif self.state == 'About':
-                self.cursor_rect.midtop = (self.startx + self.offset, self.starty)
+                self.cursor_rect.midtop = (
+                    self.startx + self.offset, self.starty)
                 self.state = 'Start'
             elif self.state == 'Exit':
-                self.cursor_rect.midtop = (self.aboutx + self.offset, self.abouty)
+                self.cursor_rect.midtop = (
+                    self.aboutx + self.offset, self.abouty)
                 self.state = 'About'
 
     def check_input(self):
