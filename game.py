@@ -12,7 +12,7 @@ class Game():
 
     TICK_RATE = 60
 
-    def __init__(self):
+    def __init__(self, image_path):
         pygame.init()
         # Set the initial game state: running is True, playing is False
         self.running = True
@@ -25,8 +25,8 @@ class Game():
         self.BACK_KEY = False
 
         # Set the display width and height
-        self.DISPLAY_W = 800
-        self.DISPLAY_H = 900
+        self.DISPLAY_W = 600
+        self.DISPLAY_H = 600
 
         # Create a surface with the specified dimensions
         self.display = pygame.Surface((self.DISPLAY_W, self.DISPLAY_H))
@@ -47,11 +47,16 @@ class Game():
         self.difficulty = 1
         self.health = 1.0
 
+        background = pygame.image.load(image_path)
+        self.image = pygame.transform.scale(
+            background, (self.DISPLAY_W, self.DISPLAY_H))
+
     def game_loop(self):
-        self.player = Player('player.png', 375, 900, 30, 30)
+        self.player = Player('player.png', self.DISPLAY_W /
+                             2, self.DISPLAY_H, 30, 30)
         num_enemies = int(math.pow(3, self.difficulty))
         self.enemies = [Enemy('enemy.png', -100, random.randint(
-            50, 700), 30, 30) for _ in range(num_enemies)]
+            self.DISPLAY_H * 0.05, self.DISPLAY_H - int(self.DISPLAY_H * 0.2)), 30, 30) for _ in range(num_enemies)]
         while self.playing:
             self.check_events()
             self.update_game_state()
@@ -59,7 +64,7 @@ class Game():
                 self.playing = False
                 continue
             if self.check_collision():
-                self.health = round(self.health + 0.1, 1)
+                self.health = round(self.health + 0.01, 2)
                 print("Collision detected")
             self.draw_game_state()
             pygame.display.update()
@@ -103,15 +108,16 @@ class Game():
             self.difficulty += 1  # Increase difficulty
             self.game_loop()
         for enemy in self.enemies:
-            enemy.move(self.DISPLAY_W)
+            enemy.move(self.DISPLAY_W, self.DISPLAY_H)
 
     def draw_game_state(self):
-        self.display.fill(self.BLACK)
+        self.display.blit(self.image, (0, 0))
         self.player.draw(self.display)
         for enemy in self.enemies:
             enemy.draw(self.display)
-        self.draw_text(f"Year Level: {self.difficulty}", 30, 70, 20)
-        self.draw_text(f"CGA: {self.health}", 30, 70, 50)
+        self.draw_text(
+            f"Year Level: {self.difficulty}", 30, self.BLACK, 100, 20)
+        self.draw_text(f"GPA: {self.health}", 30, self.BLACK, 70, 50)
         self.window.blit(self.display, (0, 0))
 
     def reset_keys(self):
@@ -121,9 +127,9 @@ class Game():
         self.START_KEY = False
         self.BACK_KEY = False
 
-    def draw_text(self, text, size, x, y):
+    def draw_text(self, text, size, color, x, y):
         font = pygame.font.Font(self.font_name, size)
-        text_surface = font.render(text, True, self.WHITE)
+        text_surface = font.render(text, True, color)
         text_rect = text_surface.get_rect()
         text_rect.center = (x, y)
         self.display.blit(text_surface, text_rect)

@@ -13,7 +13,8 @@ class Menu():
         self.offset = -100
 
     def draw_cursor(self):
-        self.game.draw_text('*', 15, self.cursor_rect.x, self.cursor_rect.y)
+        self.game.draw_text('*', 15, self.game.WHITE,
+                            self.cursor_rect.x, self.cursor_rect.y)
 
     def blit_screen(self):
         self.game.window.blit(self.game.display, (0, 0))
@@ -38,11 +39,14 @@ class MainMenu(Menu):
             self.game.check_events()
             self.check_input()
             self.game.display.fill(self.game.BLACK)
+            self.game.draw_text('Main Menu', 20, self.game.WHITE,
+                                self.game.DISPLAY_W/2, self.game.DISPLAY_H/2 - 20)
             self.game.draw_text(
-                'Main Menu', 20, self.game.DISPLAY_W/2, self.game.DISPLAY_H/2 - 20)
-            self.game.draw_text('Start Game', 20, self.startx, self.starty)
-            self.game.draw_text('About', 20, self.aboutx, self.abouty)
-            self.game.draw_text('Exit', 20, self.exitx, self.exity)
+                'Start Game', 20, self.game.WHITE, self.startx, self.starty)
+            self.game.draw_text('About', 20, self.game.WHITE,
+                                self.aboutx, self.abouty)
+            self.game.draw_text('Exit', 20, self.game.WHITE,
+                                self.exitx, self.exity)
             self.game.difficulty = 1
             self.game.health = 1.0
             self.draw_cursor()
