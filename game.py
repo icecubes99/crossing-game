@@ -4,6 +4,7 @@ import pygame
 from enemy import Enemy
 from menu import MainMenu
 from player import Player
+from gameover import GameOver
 
 clock = pygame.time.Clock()
 
@@ -57,11 +58,17 @@ class Game():
         num_enemies = int(math.pow(3, self.difficulty))
         self.enemies = [Enemy('enemy.png', -100, random.randint(
             self.DISPLAY_H * 0.05, self.DISPLAY_H - int(self.DISPLAY_H * 0.2)), 30, 30) for _ in range(num_enemies)]
+        
+
+        game_over_menu = GameOver(self)
+
         while self.playing:
             self.check_events()
             self.update_game_state()
             if self.health == 5:
                 self.playing = False
+                game_over_menu.display_menu()
+                self.game_loop()
                 continue
             if self.check_collision():
                 self.health = round(self.health + 0.01, 2)
